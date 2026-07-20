@@ -1,9 +1,9 @@
 // Package hasher provides password hashing (argon2id, bcrypt, scrypt, pbkdf2)
 // and fast hashing (sha256, sha512) with both default and custom configurations.
 //
-// # 1. Password Hashing — default config (argon2id)
+// # 1. Password Hashing — default config (pick one algorithm)
 //
-//	ph := hasher.NewPasswordHashingConfDefault()
+//	ph, err := hasher.NewPasswordHashingConfDefault("argon2")
 //	hashed, _ := ph.Hash("secret123")
 //	ok, _ := ph.Verify("secret123", hashed) // true
 //
@@ -16,9 +16,9 @@
 //	hashed, _ := ph.Hash("secret123")
 //	ok, _ := ph.Verify("secret123", hashed)
 //
-// # 3. Fast Hashing — default config (sha256)
+// # 3. Fast Hashing — default config (pick one algorithm)
 //
-//	fh := hasher.NewFastHashingConfDefault()
+//	fh, err := hasher.NewFastHashingConfDefault("sha256")
 //	h := fh.Hash("hello")
 //	ok := fh.VerifyHash("hello", h) // true
 //

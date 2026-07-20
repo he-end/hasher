@@ -7,24 +7,43 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// NewPasswordHashingConfDefault returns a PasswordHashing with argon2id
-// using balanced security and performance parameters as the default.
+// NewPasswordHashingConfDefault returns a PasswordHashing for the specified
+// algorithm using balanced security and performance defaults.
 //
-// Defaults per algorithm (stored internally, ready to use):
+// Accepts: "argon2", "bcrypt", "scrypt", "pbkdf2".
+// Returns an error if the hasher is unknown.
+//
+// Defaults per algorithm:
 //
 //	argon2:  time=1, memory=64MB, threads=4, keyLen=32, saltLen=16
 //	bcrypt:  cost=10
 //	scrypt:  N=32768, R=8, P=1, keyLen=32, saltLen=16
 //	pbkdf2:  iter=600000, keyLen=32, saltLen=16
-//
-// Active hasher: "argon2".
-func NewPasswordHashingConfDefault() PasswordHashing {
-	return &pwdHash{
-		hasher: "argon2",
-		argon2: &argon2Conf{time: 1, memory: 64 * 1024, threads: 4, keyLen: 32, saltLen: 16, separate: "$"},
-		bcrypt: &bcryptConf{cost: 10, separate: "$"},
-		scrypt: &scryptConf{N: 32768, R: 8, P: 1, keyLen: 32, saltLen: 16, separate: "$"},
-		pbkdf2: &pbkdf2Conf{iter: 600000, keyLen: 32, saltLen: 16, separate: "$"},
+func NewPasswordHashingConfDefault(hasher string) (PasswordHashing, error) {
+	switch hasher {
+	case "argon2":
+		return &pwdHash{
+			hasher: "argon2",
+			argon2: &argon2Conf{time: 1, memory: 64 * 1024, threads: 4, keyLen: 32, saltLen: 16, separate: "$"},
+		}, nil
+	case "bcrypt":
+		cost := bcrypt.DefaultCost
+		return &pwdHash{
+			hasher: "bcrypt",
+			bcrypt: &bcryptConf{cost: cost, separate: "$"},
+		}, nil
+	case "scrypt":
+		return &pwdHash{
+			hasher: "scrypt",
+			scrypt: &scryptConf{N: 32768, R: 8, P: 1, keyLen: 32, saltLen: 16, separate: "$"},
+		}, nil
+	case "pbkdf2":
+		return &pwdHash{
+			hasher: "pbkdf2",
+			pbkdf2: &pbkdf2Conf{iter: 600000, keyLen: 32, saltLen: 16, separate: "$"},
+		}, nil
+	default:
+		return nil, fmt.Errorf("unknown hasher: %s", hasher)
 	}
 }
 
@@ -130,15 +149,30 @@ func NewPasswordHashingManual(cfg PasswordHashingConfig) (PasswordHashing, error
 	}
 }
 
-// NewFastHashingConfDefault returns a FastHashing with sha256 as the default.
+// NewFastHashingConfDefault returns a FastHashing for the specified algorithm
+// using default parameters.
+//
+// Accepts: "sha256", "sha512".
+// Returns an error if the hasher is unknown.
 //
 // Use for integrity checks, fingerprints, or checksums.
 // NOT for passwords — no salt or key stretching is applied.
-func NewFastHashingConfDefault() FastHashing {
-	return &fastHash{
-		hasher: "sha256",
-		sha256: &sha256Conf{},
-		sha512: &sha512Conf{},
+func NewFastHashingConfDefault(hasher string) (FastHashing, error) {
+	switch hasher {
+	case "sha256":
+		return &fastHash{
+			hasher: "sha256",
+			sha256: &sha256Conf{},
+			sha512: &sha512Conf{},
+		}, nil
+	case "sha512":
+		return &fastHash{
+			hasher: "sha512",
+			sha256: &sha256Conf{},
+			sha512: &sha512Conf{},
+		}, nil
+	default:
+		return nil, fmt.Errorf("unknown hasher: %s", hasher)
 	}
 }
 

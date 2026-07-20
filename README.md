@@ -28,7 +28,7 @@ The `PasswordHashing` interface provides `Hash` and `Verify` with salt automatic
 #### Default (argon2id)
 
 ```go
-ph := hasher.NewPasswordHashingConfDefault()
+ph, err := hasher.NewPasswordHashingConfDefault("argon2")
 
 hashed, err := ph.Hash("secret123")
 ok, err := ph.Verify("secret123", hashed) // true
@@ -68,7 +68,7 @@ The `FastHashing` interface provides `Hash`, `HashBytes`, and `VerifyHash`. **No
 #### Default (sha256)
 
 ```go
-fh := hasher.NewFastHashingConfDefault()
+fh, err := hasher.NewFastHashingConfDefault("sha256")
 
 h := fh.Hash("hello")
 ok := fh.VerifyHash("hello", h) // true
