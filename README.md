@@ -5,11 +5,11 @@ Go hashing library — password hashing (argon2id, bcrypt, scrypt, pbkdf2) and f
 ## Installation
 
 ```bash
-go get hasher
+go get github.com/he-end/hasher
 ```
 
 ```go
-import "hasher"
+import "github.com/he-end/hasher"
 ```
 
 ## API
